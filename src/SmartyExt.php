@@ -7,7 +7,13 @@ class SmartyExt
     public string $vendorDir;
     public string $extension;
     private array $config;
+
     private \Smarty $smarty;
+
+    /**
+     * @param array $config
+     * @throws \SmartyException
+     */
     public function __construct(array $config)
     {
         $this->config = $config;
@@ -37,6 +43,20 @@ class SmartyExt
     }
 
     /**
+     * @return string
+     */
+    public function getTemplateDir(): string
+    {
+        $templateDir = $this->smarty->getTemplateDir();
+        if (is_array($templateDir) && isset($templateDir[0])) {
+            return rtrim($templateDir[0], '/');
+        } elseif (is_string($templateDir)) {
+            return rtrim($templateDir,'/');
+        }
+        throw new \RuntimeException("Unable to detect templateDir");
+    }
+
+    /**
      * @param string $template
      * @param array $params
      * @return string
@@ -50,23 +70,16 @@ class SmartyExt
             return strval($this->smarty->fetch($template));
         }
 
-        $templateDir = $this->smarty->getTemplateDir();
-        if (isset($templateDir[0])) {
-            $templateDir = $templateDir[0];
-        }
-
-        if (!is_string($templateDir)) {
-            throw new \RuntimeException("Smarty getTemplateDir return not string");
-        }
-
         if (substr($template, -1 * strlen($this->extension)) != $this->extension) {
             $template .= $this->extension;
         }
 
-        $fullTemplate = rtrim($templateDir, '/') . '/' .  ltrim($template, '/');
+        $fullTemplate = $this->getTemplateDir() . '/' .  ltrim($template, '/');
+
         if (file_exists($fullTemplate)) {
             return strval($this->smarty->fetch($template));
         }
+
         throw new \RuntimeException(sprintf("Template [%s] not exists", $fullTemplate));
     }
 }
