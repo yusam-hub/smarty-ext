@@ -58,16 +58,28 @@ class SmartyExt
 
     /**
      * @param string $template
+     * @return string
+     */
+    private function fetch(string $template): string
+    {
+        try {
+            return (string)$this->smarty->fetch($template) . ($this->smarty->debugging ? '{debug}' : '');
+        } catch (\Throwable $e) {
+            throw new \RuntimeException($e->getMessage(),$e->getCode(), $e);
+        }
+    }
+
+    /**
+     * @param string $template
      * @param array $params
      * @return string
-     * @throws \SmartyException
      */
     public function view(string $template, array $params = []): string
     {
         $this->smarty->assign($params);
 
         if (file_exists($template) && !is_dir($template)) {
-            return strval($this->smarty->fetch($template));
+            return strval($this->fetch($template));
         }
 
         if (substr($template, -1 * strlen($this->extension)) != $this->extension) {
@@ -77,7 +89,7 @@ class SmartyExt
         $fullTemplate = $this->getTemplateDir() . '/' .  ltrim($template, '/');
 
         if (file_exists($fullTemplate)) {
-            return strval($this->smarty->fetch($template));
+            return $this->fetch($template);
         }
 
         throw new \RuntimeException(sprintf("Template [%s] not exists", $fullTemplate));

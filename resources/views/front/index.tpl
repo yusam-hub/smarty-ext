@@ -1,1 +1,1 @@
-FRONT {$testKey} {debug}
+FRONT {$testKey}
