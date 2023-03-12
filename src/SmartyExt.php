@@ -63,7 +63,7 @@ class SmartyExt
     private function fetch(string $template): string
     {
         try {
-            return (string)$this->smarty->fetch($template) . ($this->smarty->debugging ? '{debug}' : '');
+            return (string) $this->smarty->fetch($template);
         } catch (\Throwable $e) {
             throw new \RuntimeException($e->getMessage(),$e->getCode(), $e);
         }
@@ -79,7 +79,7 @@ class SmartyExt
         $this->smarty->assign($params);
 
         if (file_exists($template) && !is_dir($template)) {
-            return strval($this->fetch($template));
+            return $this->fetch($template);
         }
 
         if (substr($template, -1 * strlen($this->extension)) != $this->extension) {

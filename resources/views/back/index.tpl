@@ -1,1 +1,2 @@
 BACK {$testKey}
+{debug}
