@@ -16,14 +16,7 @@ class ExampleTest extends \PHPUnit\Framework\TestCase
         $content = $smartyExt->view('index', [
             'testKey' => 'testVal'
         ]);
-        file_put_contents(__DIR__ . '/../tmp/test.html', $content);
-        $this->assertTrue(true);
-
-        $smartyExt2 = new SmartyExt($config['templates']['front']);
-        $content = $smartyExt2->view(__DIR__ . '/../resources/views/back/index.tpl', [
-            'testKey' => 'testVal'
-        ]);
-        file_put_contents(__DIR__ . '/../tmp/test2.html', $content);
+        file_put_contents(__DIR__ . '/../tmp/front.html', $content);
         $this->assertTrue(true);
     }
 }

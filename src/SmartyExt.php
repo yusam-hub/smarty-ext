@@ -12,7 +12,6 @@ class SmartyExt
 
     /**
      * @param array $config
-     * @throws \SmartyException
      */
     public function __construct(array $config)
     {
@@ -31,14 +30,27 @@ class SmartyExt
         $this->smarty->setConfigDir($this->config['smartyDirs']['configDir']??'');
         $this->smarty->setCompileDir($this->config['smartyDirs']['compileDir']??'');
         $this->smarty->setCacheDir($this->config['smartyDirs']['cacheDir']??'');
-        $this->smarty->registerPlugin('modifier','md5', function($string){
-            return md5($string);
-        });
+        $this->smarty->addPluginsDir($this->config['smartyDirs']['pluginDir']??'');
         $configSmarty = $this->config['smarty']??[];
         foreach($configSmarty as $k => $v) {
             if (property_exists($this->smarty, $k)) {
                 $this->smarty->{$k} = $v;
             }
+        }
+        $this->registerPlugins();
+    }
+
+    /**
+     * @return void
+     */
+    private function registerPlugins(): void
+    {
+        try {
+            $this->smarty->registerPlugin('modifier', 'md5', function(string $string) {
+                return md5($string);
+            });
+        } catch (\SmartyException $e) {
+            throw new \RuntimeException($e->getMessage(),$e->getCode(), $e);
         }
     }
 

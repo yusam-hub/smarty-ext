@@ -1,2 +1,2 @@
-FRONT {$testKey}
+FRONT {$testKey|md5} {ts}
 {debug}
