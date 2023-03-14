@@ -13,7 +13,7 @@
  *
  * @return string content
  */
-function smarty_block_replace($params, $content, Smarty_Internal_Template $template, &$repeat)
+function smarty_block_str_ireplace($params, $content, Smarty_Internal_Template $template, &$repeat)
 {
-    return str_replace($params['search']??'', $params['replace']??'', $content);
+    return str_ireplace($params['search']??'', $params['replace']??'', $content);
 }
