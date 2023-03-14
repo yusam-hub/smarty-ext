@@ -103,12 +103,13 @@ class SmartyExt
         ];
 
         if (file_exists($template) && !is_dir($template)) {
-            $templateFileBody = strtr($template, [
-                $this->extension => '-body' . $this->extension
-            ]);
-            $smartyExtParams['_smarty_ext_template_path'] = dirname($templateFileBody) . '/';
-            $smartyExtParams['_smarty_ext_template_body'] = basename($templateFileBody);
-            $smartyExtParams['_smarty_ext_template_file_body'] = $templateFileBody;
+            $pathInfo = pathinfo($template);
+            $smartyExtParams['_smarty_ext_template_extension'] = $this->extension;
+            $smartyExtParams['_smarty_ext_template_path'] = $pathInfo['dirname'] . '/';
+            $smartyExtParams['_smarty_ext_template_basename'] = $pathInfo['basename'];
+            $smartyExtParams['_smarty_ext_template_file'] = $template;
+            $smartyExtParams['_smarty_ext_template_filename'] = $pathInfo['dirname'] . '/' . $pathInfo['filename'];
+            $smartyExtParams['_smarty_ext_template_name'] = $pathInfo['filename'];
             $this->smartyEngine->assign($smartyExtParams);
             return $this->fetch($template);
         }
@@ -120,12 +121,13 @@ class SmartyExt
         $fullTemplate = $this->getTemplateDir() . '/' .  ltrim($template, '/');
 
         if (file_exists($fullTemplate)) {
-            $templateFileBody = strtr($fullTemplate, [
-                $this->extension => '-body' . $this->extension
-            ]);
-            $smartyExtParams['_smarty_ext_template_path'] = dirname($templateFileBody) . '/';
-            $smartyExtParams['_smarty_ext_template_body'] = basename($templateFileBody);
-            $smartyExtParams['_smarty_ext_template_file_body'] = $templateFileBody;
+            $pathInfo = pathinfo($fullTemplate);
+            $smartyExtParams['_smarty_ext_template_extension'] = $this->extension;
+            $smartyExtParams['_smarty_ext_template_path'] = $pathInfo['dirname'] . '/';
+            $smartyExtParams['_smarty_ext_template_basename'] = $pathInfo['basename'];
+            $smartyExtParams['_smarty_ext_template_file'] = $fullTemplate;
+            $smartyExtParams['_smarty_ext_template_filename'] = $pathInfo['dirname'] . '/' . $pathInfo['filename'];
+            $smartyExtParams['_smarty_ext_template_name'] = $pathInfo['filename'];
             $this->smartyEngine->assign($smartyExtParams);
             return $this->fetch($fullTemplate);
         }
