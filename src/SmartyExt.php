@@ -8,7 +8,7 @@ class SmartyExt
     public string $extension;
     private array $config;
 
-    private SmartyEngine $smarty;
+    private SmartyEngine $smartyEngine;
 
     /**
      * @param array $config
@@ -25,16 +25,23 @@ class SmartyExt
 
         require_once(rtrim($this->vendorDir, '/') . '/smarty/smarty/libs/bootstrap.php');
 
-        $this->smarty = new SmartyEngine();
-        $this->smarty->setTemplateDir($this->config['smartyDirs']['templateDir']??'');
-        $this->smarty->setConfigDir($this->config['smartyDirs']['configDir']??'');
-        $this->smarty->setCompileDir($this->config['smartyDirs']['compileDir']??'');
-        $this->smarty->setCacheDir($this->config['smartyDirs']['cacheDir']??'');
-        $this->smarty->addPluginsDir($this->config['smartyDirs']['pluginDir']??'');
+        $this->smartyEngine = new SmartyEngine();
+        $this->smartyEngine->setTemplateDir($this->config['smartyDirs']['templateDir']??'');
+        $this->smartyEngine->setConfigDir($this->config['smartyDirs']['configDir']??'');
+        $this->smartyEngine->setCompileDir($this->config['smartyDirs']['compileDir']??'');
+        $this->smartyEngine->setCacheDir($this->config['smartyDirs']['cacheDir']??'');
+        $this->smartyEngine->addPluginsDir(
+            array_merge(
+                (array) $this->config['smartyDirs']['pluginDir']??[],
+                [
+                    __DIR__ . DIRECTORY_SEPARATOR . 'smarty_plugins'
+                ]
+            )
+        );
         $configSmarty = $this->config['smarty']??[];
         foreach($configSmarty as $k => $v) {
-            if (property_exists($this->smarty, $k)) {
-                $this->smarty->{$k} = $v;
+            if (property_exists($this->smartyEngine, $k)) {
+                $this->smartyEngine->{$k} = $v;
             }
         }
         $this->registerPlugins();
@@ -46,7 +53,7 @@ class SmartyExt
     private function registerPlugins(): void
     {
         try {
-            $this->smarty->registerPlugin('modifier', 'md5', function(string $string) {
+            $this->smartyEngine->registerPlugin('modifier', 'md5', function(string $string) {
                 return md5($string);
             });
         } catch (\SmartyException $e) {
@@ -59,7 +66,7 @@ class SmartyExt
      */
     public function getTemplateDir(): string
     {
-        $templateDir = $this->smarty->getTemplateDir();
+        $templateDir = $this->smartyEngine->getTemplateDir();
         if (is_array($templateDir) && isset($templateDir[0])) {
             return rtrim($templateDir[0], '/');
         } elseif (is_string($templateDir)) {
@@ -75,7 +82,7 @@ class SmartyExt
     private function fetch(string $template): string
     {
         try {
-            return (string) $this->smarty->fetch($template);
+            return (string) $this->smartyEngine->fetch($template);
         } catch (\Throwable $e) {
             throw new \RuntimeException($e->getMessage(),$e->getCode(), $e);
         }
@@ -88,10 +95,10 @@ class SmartyExt
      */
     public function view(string $template, array $params = []): string
     {
-        $this->smarty->assign($params);
+        $this->smartyEngine->assign($params);
 
         $smartyExtParams = [
-            '_smarty_debugging' => $this->smarty->debugging,
+            '_smarty_debugging' => $this->smartyEngine->debugging,
             '_smarty_ext_template_base_dir' => $this->getTemplateDir(),
         ];
 
@@ -102,7 +109,7 @@ class SmartyExt
             $smartyExtParams['_smarty_ext_template_path'] = dirname($templateFileBody) . '/';
             $smartyExtParams['_smarty_ext_template_body'] = basename($templateFileBody);
             $smartyExtParams['_smarty_ext_template_file_body'] = $templateFileBody;
-            $this->smarty->assign($smartyExtParams);
+            $this->smartyEngine->assign($smartyExtParams);
             return $this->fetch($template);
         }
 
@@ -119,7 +126,7 @@ class SmartyExt
             $smartyExtParams['_smarty_ext_template_path'] = dirname($templateFileBody) . '/';
             $smartyExtParams['_smarty_ext_template_body'] = basename($templateFileBody);
             $smartyExtParams['_smarty_ext_template_file_body'] = $templateFileBody;
-            $this->smarty->assign($smartyExtParams);
+            $this->smartyEngine->assign($smartyExtParams);
             return $this->fetch($fullTemplate);
         }
 
