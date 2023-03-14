@@ -12,6 +12,7 @@ class SmartyExt
 
     /**
      * @param array $config
+     * @throws \SmartyException
      */
     public function __construct(array $config)
     {
@@ -49,20 +50,18 @@ class SmartyExt
 
     /**
      * @return void
+     * @throws \SmartyException
      */
     private function registerPlugins(): void
     {
-        try {
-            $this->smartyEngine->registerPlugin('modifier', 'md5', function(string $string) {
-                return md5($string);
-            });
-        } catch (\SmartyException $e) {
-            throw new \RuntimeException($e->getMessage(),$e->getCode(), $e);
-        }
+        $this->smartyEngine->registerPlugin('modifier', 'md5', function(string $string) {
+            return md5($string);
+        });
     }
 
     /**
      * @return string
+     * @throws \SmartyException
      */
     public function getTemplateDir(): string
     {
@@ -72,26 +71,24 @@ class SmartyExt
         } elseif (is_string($templateDir)) {
             return rtrim($templateDir,'/');
         }
-        throw new \RuntimeException("Unable to detect templateDir");
+        throw new \SmartyException("Unable to detect templateDir");
     }
 
     /**
      * @param string $template
      * @return string
+     * @throws \SmartyException
      */
     private function fetch(string $template): string
     {
-        try {
-            return (string) $this->smartyEngine->fetch($template);
-        } catch (\Throwable $e) {
-            throw new \RuntimeException($e->getMessage(),$e->getCode(), $e);
-        }
+        return (string) $this->smartyEngine->fetch($template);
     }
 
     /**
      * @param string $template
      * @param array $params
      * @return string
+     * @throws \SmartyException
      */
     public function view(string $template, array $params = []): string
     {
@@ -132,6 +129,6 @@ class SmartyExt
             return $this->fetch($fullTemplate);
         }
 
-        throw new \RuntimeException(sprintf("Template [%s] not exists", $fullTemplate));
+        throw new \SmartyException(sprintf("Template [%s] not exists", $fullTemplate));
     }
 }
