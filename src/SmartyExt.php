@@ -8,7 +8,7 @@ class SmartyExt
     public string $extension;
     private array $config;
 
-    private \Smarty $smarty;
+    private SmartyEngine $smarty;
 
     /**
      * @param array $config
@@ -25,7 +25,7 @@ class SmartyExt
 
         require_once(rtrim($this->vendorDir, '/') . '/smarty/smarty/libs/bootstrap.php');
 
-        $this->smarty = new \Smarty();
+        $this->smarty = new SmartyEngine();
         $this->smarty->setTemplateDir($this->config['smartyDirs']['templateDir']??'');
         $this->smarty->setConfigDir($this->config['smartyDirs']['configDir']??'');
         $this->smarty->setCompileDir($this->config['smartyDirs']['compileDir']??'');
@@ -90,7 +90,19 @@ class SmartyExt
     {
         $this->smarty->assign($params);
 
+        $smartyExtParams = [
+            '_smarty_debugging' => $this->smarty->debugging,
+            '_smarty_ext_template_base_dir' => $this->getTemplateDir(),
+        ];
+
         if (file_exists($template) && !is_dir($template)) {
+            $templateFileBody = strtr($template, [
+                $this->extension => '-body' . $this->extension
+            ]);
+            $smartyExtParams['_smarty_ext_template_path'] = dirname($templateFileBody) . '/';
+            $smartyExtParams['_smarty_ext_template_body'] = basename($templateFileBody);
+            $smartyExtParams['_smarty_ext_template_file_body'] = $templateFileBody;
+            $this->smarty->assign($smartyExtParams);
             return $this->fetch($template);
         }
 
@@ -101,7 +113,14 @@ class SmartyExt
         $fullTemplate = $this->getTemplateDir() . '/' .  ltrim($template, '/');
 
         if (file_exists($fullTemplate)) {
-            return $this->fetch($template);
+            $templateFileBody = strtr($fullTemplate, [
+                $this->extension => '-body' . $this->extension
+            ]);
+            $smartyExtParams['_smarty_ext_template_path'] = dirname($templateFileBody) . '/';
+            $smartyExtParams['_smarty_ext_template_body'] = basename($templateFileBody);
+            $smartyExtParams['_smarty_ext_template_file_body'] = $templateFileBody;
+            $this->smarty->assign($smartyExtParams);
+            return $this->fetch($fullTemplate);
         }
 
         throw new \RuntimeException(sprintf("Template [%s] not exists", $fullTemplate));

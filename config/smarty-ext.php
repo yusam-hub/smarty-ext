@@ -6,7 +6,7 @@ return [
     'templates' => [
         'front' => [
             'smarty' => [
-                'debugging' => true,
+                'debugging' => false,
                 'force_compile' => true,
                 'caching' => false,
                 'cache_lifetime' => 120,
