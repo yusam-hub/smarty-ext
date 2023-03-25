@@ -49,6 +49,14 @@ class SmartyExt
     }
 
     /**
+     * @return SmartyEngine
+     */
+    public function getSmartyEngine(): SmartyEngine
+    {
+        return $this->smartyEngine;
+    }
+
+    /**
      * @return void
      * @throws \SmartyException
      */
