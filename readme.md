@@ -1,10 +1,6 @@
 #### yusam-hub/smarty-ext
 
-    "php": "^7.4|^8.0|^8.1|^8.2"
-
-#### tests
-
-    sh phpinit
+     "php": ">=7.4 <9.0"
 
 #### setup
 
@@ -19,5 +15,6 @@
     "require": {
         ...
         "yusam-hub/smarty-ext": "dev-master"
+        "yusam-hub/smarty-ext": "^1.0"
         ...
     }

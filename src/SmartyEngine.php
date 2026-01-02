@@ -1,7 +1,7 @@
 <?php
 
 namespace YusamHub\SmartyExt;
-class SmartyEngine extends \Smarty
+class SmartyEngine extends \Smarty\Smarty
 {
     protected array $linkedValue = [];
 
