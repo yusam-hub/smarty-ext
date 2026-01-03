@@ -3,6 +3,7 @@
 namespace YusamHub\SmartyExt;
 
 use Smarty\Exception;
+use YusamHub\SmartyExt\Extension\BaseExtension;
 
 class SmartyExt
 {
@@ -32,7 +33,7 @@ class SmartyExt
         $this->smartyEngine->setCompileDir($this->config['smartyDirs']['compileDir']??'');
         $this->smartyEngine->setCacheDir($this->config['smartyDirs']['cacheDir']??'');
         //todo: need fix
-        //$this->smartyEngine->addExtension();
+        $this->smartyEngine->addExtension(new BaseExtension());
         /*$this->smartyEngine->addPluginsDir(
             array_merge(
                 (array) $this->config['smartyDirs']['pluginDir']??[],

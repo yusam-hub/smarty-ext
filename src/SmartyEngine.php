@@ -9,7 +9,7 @@ class SmartyEngine extends \Smarty\Smarty
      * @param string $key
      * @return mixed
      */
-    public function getLinkedValue(string $key)
+    public function getLinkedValue(string $key): mixed
     {
         return $this->linkedValue[$key];
     }
